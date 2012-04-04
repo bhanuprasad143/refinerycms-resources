@@ -15,7 +15,7 @@ module ::Refinery
       end
 
       def create
-        @resources = Resource.create_resources(params[:resource])
+        @resources = Resource.create_resources(params[:resource].merge(:site_id => current_site.id))
         @resource = @resources.detect { |r| !r.valid? }
 
         unless params[:insert]
@@ -78,6 +78,7 @@ module ::Refinery
 
       def paginate_resources(conditions={})
         @resources = Resource.where(conditions).
+                              by_site(current_site).
                               paginate(:page => params[:page], :per_page => Resource.per_page(from_dialog?)).
                               order('created_at DESC')
       end
@@ -85,3 +86,4 @@ module ::Refinery
     end
   end
 end
+
